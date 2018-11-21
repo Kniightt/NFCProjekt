@@ -39,7 +39,7 @@ import java.util.Map;
 import hu.bme.aut.myapplication.TokenClass;
 
 public class MainActivity extends AppCompatActivity
-implements NfcAdapter.CreateNdefMessageCallback {
+        implements NfcAdapter.CreateNdefMessageCallback {
 
     private FirebaseAuth auth;
     NFCHelper nfcHelper;
@@ -65,7 +65,7 @@ implements NfcAdapter.CreateNdefMessageCallback {
         statusText = findViewById(R.id.status);
         uidText = findViewById(R.id.uid);
         emailView = findViewById(R.id.email);
-
+        tvTokenCount = findViewById(R.id.token_count);
         passwordView = findViewById(R.id.password);
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -101,7 +101,7 @@ implements NfcAdapter.CreateNdefMessageCallback {
             }
         });
         function = FirebaseFunctions.getInstance();
-        nfcHelper.getAdapter().setNdefPushMessageCallback(this,this);
+        nfcHelper.getAdapter().setNdefPushMessageCallback(this, this);
     }
 
     @Override
@@ -118,7 +118,6 @@ implements NfcAdapter.CreateNdefMessageCallback {
 
             btnGetToken = findViewById(R.id.btn_get_token);
             btnGetToken.setVisibility(View.VISIBLE);
-            tvTokenCount = findViewById(R.id.token_count);
             btnGetToken.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -157,7 +156,7 @@ implements NfcAdapter.CreateNdefMessageCallback {
             uidText.setText(null);
             if (btnGetToken != null)
                 btnGetToken.setVisibility(View.INVISIBLE);
-            if(tvTokenCount != null) tvTokenCount.setText("");
+            if (tvTokenCount != null) tvTokenCount.setText("");
 
 
             findViewById(R.id.buttons).setVisibility(View.VISIBLE);
@@ -236,7 +235,7 @@ implements NfcAdapter.CreateNdefMessageCallback {
 
     @Override
     public NdefMessage createNdefMessage(NfcEvent nfcEvent) {
-        if (token != null){
+        if (token != null) {
             return nfcHelper.createTextMessage(token);
 
         }
@@ -244,22 +243,24 @@ implements NfcAdapter.CreateNdefMessageCallback {
         return null;
     }
 
+
     @Override
-    protected void onNewIntent(Intent intent) {
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
-            Parcelable[] receivedArray = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            if(receivedArray != null){
+    protected void onResume() {
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            Parcelable[] receivedArray = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            if (receivedArray != null) {
                 NdefMessage message = (NdefMessage) receivedArray[0];
                 NdefRecord[] records = message.getRecords();
                 try {
                     TokenClass.Token token = TokenClass.Token.parseFrom(records[0].getPayload());
                     uidText.setText(token.getUsername());
-                    tvTokenCount.setText(token.getCount());
+                    tvTokenCount.setText(Integer.toString(token.getCount()));
                 } catch (InvalidProtocolBufferException e) {
                     e.printStackTrace();
                 }
             }
 
         }
+        super.onResume();
     }
 }
