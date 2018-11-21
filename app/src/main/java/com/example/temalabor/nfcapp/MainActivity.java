@@ -1,6 +1,12 @@
 package com.example.temalabor.nfcapp;
 
+import android.content.Intent;
 import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcEvent;
+import android.nfc.tech.Ndef;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,11 +31,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableResult;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+import hu.bme.aut.myapplication.TokenClass;
+
+public class MainActivity extends AppCompatActivity
+implements NfcAdapter.CreateNdefMessageCallback {
 
     private FirebaseAuth auth;
     NFCHelper nfcHelper;
@@ -40,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView uidText;
     private Button btnGetToken;
     private TextView tvTokenCount;
+
+    TokenClass.Token token = null;
 
     private FirebaseFunctions function;
 
@@ -89,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         function = FirebaseFunctions.getInstance();
+        nfcHelper.getAdapter().setNdefPushMessageCallback(this,this);
     }
 
     @Override
@@ -125,6 +138,10 @@ public class MainActivity extends AppCompatActivity {
                             }
                             Map<String, String> result = task.getResult();
                             tvTokenCount.setText(result.get("count"));
+                            token = TokenClass.Token.newBuilder()
+                                    .setUsername(currentUser.getUid())
+                                    .setCount(Integer.parseInt(tvTokenCount.getText().toString()))
+                                    .build();
                         }
                     });
                 }
@@ -134,8 +151,6 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.email_login_form).setVisibility(View.GONE);
             findViewById(R.id.signed_in_buttons).setVisibility(View.VISIBLE);
 
-            NdefMessage message = nfcHelper.createTextMessage(currentUser.getUid());
-            nfcHelper.getAdapter().setNdefPushMessage(message, this);
 
         } else {
             statusText.setText(R.string.signed_out);
@@ -217,5 +232,34 @@ public class MainActivity extends AppCompatActivity {
     private void logout() {
         auth.signOut();
         updateUI(null);
+    }
+
+    @Override
+    public NdefMessage createNdefMessage(NfcEvent nfcEvent) {
+        if (token != null){
+            return nfcHelper.createTextMessage(token);
+
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
+            Parcelable[] receivedArray = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            if(receivedArray != null){
+                NdefMessage message = (NdefMessage) receivedArray[0];
+                NdefRecord[] records = message.getRecords();
+                try {
+                    TokenClass.Token token = TokenClass.Token.parseFrom(records[0].getPayload());
+                    uidText.setText(token.getUsername());
+                    tvTokenCount.setText(token.getCount());
+                } catch (InvalidProtocolBufferException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
     }
 }

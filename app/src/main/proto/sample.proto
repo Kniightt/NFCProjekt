@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package tutorial;
+
+option java_package = "hu.bme.aut.myapplication";
+option java_outer_classname = "TokenClass";
+
+message Token {
+	required string username = 1;
+	required int32 count = 2;
+}
