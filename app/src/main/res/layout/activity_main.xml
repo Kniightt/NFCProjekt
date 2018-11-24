@@ -98,6 +98,16 @@
             android:layout_weight="1"
             android:text="@string/action_sign_out"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_get_token"
+            style="?android:textAppearanceSmall"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:text="@string/get_token"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -106,14 +116,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingTop="100dp">
-
-        <Button
-            android:id="@+id/btn_get_token"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            android:text="@string/get_token" />
+        android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/status"
@@ -125,13 +128,12 @@
             android:id="@+id/uid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Firebase UID" />
+            tools:text="UID" />
 
         <TextView
-            android:id="@+id/token_count"
+            android:id="@+id/token"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="26sp"
-            tools:text="12"/>
+            tools:text="Token" />
     </LinearLayout>
 </LinearLayout>

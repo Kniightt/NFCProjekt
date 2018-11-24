@@ -6,8 +6,8 @@
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_out">Sign out</string>
     <string name="action_register">Register</string>
-    <string name="signed_in">Signed in as: %s</string>
+    <string name="user_email">User email: %s</string>
     <string name="signed_out">Signed out</string>
-    <string name="firebase_uid">Firebase User ID: %s</string>
+    <string name="uid">UID: %s</string>
     <string name="get_token">Get Token</string>
 </resources>

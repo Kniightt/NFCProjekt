@@ -2,10 +2,10 @@ syntax = "proto2";
 
 package tutorial;
 
-option java_package = "hu.bme.aut.myapplication";
+option java_package = "com.example.temalabor.nfcapp";
 option java_outer_classname = "TokenClass";
 
 message Token {
-	required string username = 1;
-	required int32 count = 2;
+	required string uid = 1;
+	required string token = 2;
 }
