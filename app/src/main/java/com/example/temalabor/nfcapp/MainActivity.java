@@ -95,19 +95,19 @@ public class MainActivity extends AppCompatActivity {
         btnGetToken.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                getToken(user.getUid()).addOnCompleteListener(new OnCompleteListener<Map<String, Object>>() {
+                getToken(user.getUid()).addOnCompleteListener(new OnCompleteListener<String>() {
                     @Override
-                    public void onComplete(@NonNull Task<Map<String, Object>> task) {
+                    public void onComplete(@NonNull Task<String> task) {
                         if (!task.isSuccessful()) {
                             showSnackbar("Task unsuccessful.");
                             return;
                         }
-                        Map<String, Object> result = task.getResult();
-                        String textToShow = "Token: " + result.get("token");
+                        String result = task.getResult();
+                        String textToShow = "Token: " + result;
                         tokenText.setText(textToShow);
                         token = TokenClass.Token.newBuilder()
                                 .setUid(user.getUid())
-                                .setToken((String) result.get("token"))
+                                .setToken(result)
                                 .build();
                         NdefMessage message = nfcHelper.createTextMessage(token);
                         nfcHelper.getAdapter().setNdefPushMessage(message, MainActivity.this);
@@ -149,15 +149,15 @@ public class MainActivity extends AppCompatActivity {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 
-    private Task<Map<String, Object>> getToken(String uid) {
+    private Task<String> getToken(String uid) {
         Map<String, Object> data = new HashMap<>();
         data.put("uid", uid);
 
-        return function.getHttpsCallable("getToken")
-                .call(data).continueWith(new Continuation<HttpsCallableResult, Map<String, Object>>() {
+        return function.getHttpsCallable("getCustomToken")
+                .call(data).continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
-                    public Map<String, Object> then(@NonNull Task<HttpsCallableResult> task) {
-                        Map<String, Object> result = (Map<String, Object>) task.getResult().getData();
+                    public String then(@NonNull Task<HttpsCallableResult> task) {
+                        String result = (String) task.getResult().getData();
                         return result;
                     }
                 });
