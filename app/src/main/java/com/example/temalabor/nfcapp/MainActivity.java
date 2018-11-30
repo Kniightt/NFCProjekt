@@ -1,5 +1,8 @@
 package com.example.temalabor.nfcapp;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.nfc.NdefMessage;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -103,6 +106,9 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
                         String result = task.getResult();
+                        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clipData = ClipData.newPlainText("token",result);
+                        clipboardManager.setPrimaryClip(clipData);
                         String textToShow = "Token: " + result;
                         tokenText.setText(textToShow);
                         token = TokenClass.Token.newBuilder()
@@ -151,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Task<String> getToken(String uid) {
         Map<String, Object> data = new HashMap<>();
-        data.put("uid", uid);
+        data.put("userid", uid);
 
         return function.getHttpsCallable("getCustomToken")
                 .call(data).continueWith(new Continuation<HttpsCallableResult, String>() {
