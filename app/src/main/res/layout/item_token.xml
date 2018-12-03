@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal"
+    android:paddingTop="15dp">
+
+    <RadioButton
+        android:id="@+id/radioButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="8dp"
+        android:layout_gravity="center_vertical"/>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tidView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TID: "/>
+
+        <TextView
+            android:id="@+id/uemView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User email: "/>
+
+        <TextView
+            android:id="@+id/sidView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SID: "/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/countView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Count: "/>
+
+        <TextView
+            android:id="@+id/iatView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Iat: "/>
+
+        <TextView
+            android:id="@+id/expView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Exp: "/>
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/deleteButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@android:drawable/ic_menu_delete"
+        android:layout_gravity="center_vertical"/>
+
+</LinearLayout>

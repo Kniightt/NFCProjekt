@@ -7,7 +7,12 @@
     <string name="action_sign_out">Sign out</string>
     <string name="action_register">Register</string>
     <string name="user_email">User email: %s</string>
-    <string name="signed_out">Signed out</string>
     <string name="uid">UID: %s</string>
     <string name="get_token">Get Token</string>
+    <string name="tv_0">TID: %1$s</string>
+    <string name="tv_1">User: %1$s</string>
+    <string name="tv_2">SID: %1$s</string>
+    <string name="tv_3">Count: %1$s</string>
+    <string name="tv_4">Iat: %1$s</string>
+    <string name="tv_5">Exp: %1$s</string>
 </resources>
