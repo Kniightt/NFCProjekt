@@ -20,6 +20,10 @@ import com.example.temalabor.nfcapp.data.TokenItem;
 import com.example.temalabor.nfcapp.data.TokenList;
 import com.example.temalabor.nfcapp.utility.NFCHelper;
 
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -74,6 +78,7 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.TokenViewHol
         TokenItem newItem = new TokenItem(getTokenData(token), token);
         items.getTokens().add(newItem);
         notifyItemInserted(items.getTokens().size() - 1);
+        serialize();
     }
 
     public void changeItem(String token){
@@ -87,6 +92,7 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.TokenViewHol
                 items.getTokens().set(indexToChange, newItem);
                 currentlySelected = newItem;
                 notifyItemChanged(indexToChange);
+                serialize();
 
                 pushComplete = false;
                 ndefPush(newItem);
@@ -95,6 +101,28 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.TokenViewHol
                         Toast.LENGTH_LONG).show();
                 pushComplete = false;
             }
+        }
+    }
+
+    private void deleteItem(TokenItem item){
+        if (item.isSelected()) {
+            pushComplete = false;
+            nfcHelper.pushMessage(null);
+            currentlySelected = null;
+        }
+
+        items.getTokens().remove(item);
+        notifyDataSetChanged();
+        serialize();
+    }
+
+    private void serialize(){
+        File xmlFile = new File(myContext.getExternalFilesDir(null) + "/tokens.xml");
+        Serializer serializer = new Persister();
+        try {
+            serializer.write(items, xmlFile);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -121,17 +149,6 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.TokenViewHol
         }
         else
             return "Error.";
-    }
-
-    private void deleteItem(TokenItem item){
-        if (item.isSelected()) {
-            pushComplete = false;
-            nfcHelper.pushMessage(null);
-            currentlySelected = null;
-        }
-
-        items.getTokens().remove(item);
-        notifyDataSetChanged();
     }
 
     @Override

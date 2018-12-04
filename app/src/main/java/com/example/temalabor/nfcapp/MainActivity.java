@@ -32,6 +32,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -117,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         btnGetToken.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                getToken(user.getUid()).addOnCompleteListener(new OnCompleteListener<String>() {
+                getToken().addOnCompleteListener(new OnCompleteListener<String>() {
                     @Override
                     public void onComplete(@NonNull Task<String> task) {
                         if (!task.isSuccessful()) {
@@ -135,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         RecyclerView recyclerView = findViewById(R.id.RecyclerView);
-        tokenAdapter = new TokenAdapter(new TokenList(), this, nfcHelper);
+        tokenAdapter = new TokenAdapter(loadTokens(), this, nfcHelper);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(tokenAdapter);
     }
@@ -181,9 +185,25 @@ public class MainActivity extends AppCompatActivity {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 
-    private Task<String> getToken(String uid) {
+    private TokenList loadTokens(){
+
+        TokenList tokens = new TokenList();
+        File xmlFile = new File(getExternalFilesDir(null) + "/tokens.xml");
+        Serializer serializer = new Persister();
+
+        if (xmlFile.exists()) {
+            try {
+                tokens = serializer.read(TokenList.class, xmlFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return tokens;
+    }
+
+    private Task<String> getToken() {
         Map<String, Object> data = new HashMap<>();
-        data.put("userid", uid);
+        data.put("userid", user.getUid());
         data.put("useremail", user.getEmail().split("@")[0]);
 
         return function.getHttpsCallable("getCustomToken")
