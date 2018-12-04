@@ -53,7 +53,8 @@ public class NFCHelper implements NfcAdapter.OnNdefPushCompleteCallback {
 
     @Override
     public void onNdefPushComplete(NfcEvent nfcEvent) {
-        tokenAdapter.setPushComplete(true);
+        tokenAdapter.getItems().setAnswerNeeded(true);
+        tokenAdapter.serialize();
         pushMessage(null);
     }
 

@@ -30,7 +30,7 @@
             <EditText
                 android:id="@+id/passwordView"
                 android:layout_width="0dp"
-                android:layout_weight="1.5"
+                android:layout_weight="1.2"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_password"
                 android:imeActionId="6"

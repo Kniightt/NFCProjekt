@@ -34,13 +34,17 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.TokenViewHol
     private TokenItem currentlySelected;
     private Context myContext;
     private NFCHelper nfcHelper;
-    private boolean pushComplete = false;
 
     public TokenAdapter(TokenList _items, Context context, NFCHelper _nfcHelper) {
         items = _items;
         myContext = context;
         nfcHelper = _nfcHelper;
         nfcHelper.setTokenAdapter(this);
+        TokenItem selectedToken = items.searchSelectedToken();
+        if (selectedToken != null)
+            currentlySelected = selectedToken;
+        if (selectedToken != null && !items.isAnswerNeeded())
+            ndefPush(selectedToken);
     }
 
     @NonNull
@@ -92,21 +96,23 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.TokenViewHol
                 items.getTokens().set(indexToChange, newItem);
                 currentlySelected = newItem;
                 notifyItemChanged(indexToChange);
-                serialize();
 
-                pushComplete = false;
+                items.setAnswerNeeded(false);
                 ndefPush(newItem);
+
+                serialize();
             } catch (Exception e){
                 Toast.makeText(myContext, token,
                         Toast.LENGTH_LONG).show();
-                pushComplete = false;
+                items.setAnswerNeeded(false);
+                serialize();
             }
         }
     }
 
     private void deleteItem(TokenItem item){
         if (item.isSelected()) {
-            pushComplete = false;
+            items.setAnswerNeeded(false);
             nfcHelper.pushMessage(null);
             currentlySelected = null;
         }
@@ -116,7 +122,7 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.TokenViewHol
         serialize();
     }
 
-    private void serialize(){
+    public void serialize(){
         File xmlFile = new File(myContext.getExternalFilesDir(null) + "/tokens.xml");
         Serializer serializer = new Persister();
         try {
@@ -187,12 +193,13 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.TokenViewHol
             radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!pushComplete) {
+                    if (!items.isAnswerNeeded()) {
                         if (currentlySelected != null) currentlySelected.setSelected(false);
                         item.setSelected(true);
                         currentlySelected = item;
                         ndefPush(item);
                         notifyDataSetChanged();
+                        serialize();
                     } else {
                         Toast.makeText(myContext, "Answer needed first.",
                                 Toast.LENGTH_LONG).show();
@@ -212,7 +219,7 @@ public class TokenAdapter extends RecyclerView.Adapter<TokenAdapter.TokenViewHol
         nfcHelper.pushMessage(message);
     }
 
-    public void setPushComplete(boolean pushComplete) {
-        this.pushComplete = pushComplete;
+    public TokenList getItems() {
+        return items;
     }
 }
